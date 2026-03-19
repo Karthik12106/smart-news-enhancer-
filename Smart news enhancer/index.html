@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Enhancer - Analyze, Summarize, and Contextualize News Articles</title>
+    <!-- Bootstrap CSS for styling and layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Global Black, White & Blue Theme */
+        :root {
+            --black: #000000;
+            --dark-gray: #2a2a2a;
+            --medium-gray: #666666;
+            --light-gray: #cccccc;
+            --very-light-gray: #f5f5f5;
+            --white: #ffffff;
+            --blue-primary: #2563eb;
+            --blue-dark: #1e40af;
+            --blue-light: #3b82f6;
+            --blue-lighter: #60a5fa;
+            --blue-pale: #dbeafe;
+        }
+        
+        body {
+            background-color: var(--white);
+            color: var(--black);
+            padding-top: 0;
+        }
+        
+        /* Visible Navigation Bar - Black with blue accents */
+        .navbar.sticky-top {
+            background: linear-gradient(135deg, var(--black) 0%, var(--dark-gray) 100%) !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            z-index: 1030;
+            border-bottom: 3px solid var(--blue-primary);
+        }
+        
+        .navbar-brand {
+            color: var(--white) !important;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .navbar-brand:hover {
+            color: var(--blue-lighter) !important;
+        }
+        
+        .navbar-brand i {
+            color: var(--blue-light);
+        }
+        
+        .nav-link {
+            color: var(--light-gray) !important;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--blue-lighter) !important;
+        }
+        
+        .nav-link.active {
+            color: var(--white) !important;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background-color: var(--blue-primary);
+            border-radius: 2px;
+        }
+        
+        /* Scroll progress bar - Blue gradient */
+        .scroll-progress-container {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--light-gray);
+            z-index: 1029;
+        }
+        
+        .scroll-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue-dark) 0%, var(--blue-primary) 50%, var(--blue-light) 100%);
+            width: 0%;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+        
+        /* Hero section - Black background with blue accents */
+        .hero-section {
+            background: linear-gradient(135deg, var(--black) 0%, var(--dark-gray) 100%);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 0;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            right: -10%;
+            bottom: -50%;
+            background: radial-gradient(circle at 30% 40%, rgba(37, 99, 235, 0.15) 0%, transparent 35%),
+                        radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.12) 0%, transparent 35%),
+                        radial-gradient(circle at 50% 80%, rgba(96, 165, 250, 0.1) 0%, transparent 40%);
+            filter: blur(60px);
+            z-index: 1;
+        }
+        
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-section h1 {
+            color: var(--white);
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+        }
+        
+        .hero-section p {
+            color: var(--light-gray);
+            font-size: 1.25rem;
+        }
+        
+        /* Cards with blue accents */
+        .card {
+            border: 2px solid var(--light-gray);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15);
+            border-color: var(--blue-primary);
+        }
+        
+        .card-header.bg-light {
+            background: linear-gradient(135deg, var(--very-light-gray) 0%, var(--white) 100%) !important;
+            border-bottom: 3px solid var(--blue-primary) !important;
+            color: var(--black);
+            font-weight: 600;
+        }
+        
+        .card-header i {
+            color: var(--blue-primary);
+        }
+        
+        /* Buttons - Blue primary with black secondary */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-dark) 100%) !important;
+            border: 2px solid var(--blue-primary) !important;
+            color: var(--white) !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue-primary) 100%) !important;
+            border-color: var(--blue-light) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .btn-outline-secondary {
+            color: var(--black) !important;
+            border: 2px solid var(--medium-gray) !important;
+            background-color: var(--white) !important;
+            font-weight: 600;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--black) !important;
+            border-color: var(--black) !important;
+            color: var(--white) !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--blue-primary) !important;
+            border: 2px solid var(--blue-primary) !important;
+            background-color: var(--white) !important;
+            font-weight: 500;
+        }
+        
+        .btn-outline-primary:hover, 
+        .btn-outline-primary:active, 
+        .btn-check:checked + .btn-outline-primary {
+            background-color: var(--blue-primary) !important;
+            border-color: var(--blue-primary) !important;
+            color: var(--white) !important;
+        }
+        
+        /* Form controls with blue focus */
+        .form-control {
+            border: 2px solid var(--light-gray);
+            color: var(--black);
+        }
+        
+        .form-control:focus {
+            border-color: var(--blue-primary);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.2);
+        }
+        
+        .form-label {
+            color: var(--black);
+            font-weight: 600;
+        }
+        
+        /* Analysis sections with blue left border */
+        .analysis-section {
+            background-color: var(--white);
+            border-left: 5px solid var(--blue-primary);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .analysis-section:hover {
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+            border-left-width: 7px;
+        }
+        
+        .analysis-section:nth-child(even) {
+            background-color: var(--very-light-gray);
+        }
+        
+        .analysis-title {
+            color: var(--black) !important;
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .analysis-title i {
+            color: var(--blue-primary);
+        }
+        
+        /* Analysis result boxes with subtle color accents */
+        .analysis-result {
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        
+        .analysis-low {
+            background-color: rgba(40, 167, 69, 0.05);
+            border-color: #28a745;
+        }
+        
+        .analysis-medium {
+            background-color: rgba(255, 193, 7, 0.05);
+            border-color: #ffc107;
+        }
+        
+        .analysis-high {
+            background-color: rgba(220, 53, 69, 0.05);
+            border-color: #dc3545;
+        }
+        
+        .analysis-result h5 {
+            color: var(--black);
+            font-weight: 700;
+        }
+        
+        .analysis-result p, .analysis-result li {
+            color: var(--dark-gray);
+        }
+        
+        /* Entity tags - Blue theme with hover effect */
+        .entity-tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0.25rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background-color: var(--blue-pale);
+            border: 2px solid var(--blue-light);
+            color: var(--blue-dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .entity-tag:hover {
+            background-color: var(--blue-primary);
+            color: var(--white);
+            border-color: var(--blue-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        /* Section headings with blue underline */
+        h6 {
+            color: var(--blue-dark);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        h6::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--blue-primary);
+            border-radius: 2px;
+        }
+        
+        h2, h3, h4, h5 {
+            color: var(--black);
+        }
+        
+        /* Links with blue color */
+        a {
+            color: var(--blue-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--blue-dark);
+            text-decoration: underline;
+        }
+        
+        /* Loading spinner - Blue */
+        .spinner-border {
+            border-color: var(--blue-pale);
+            border-right-color: var(--blue-primary);
+        }
+        
+        #loading-indicator p {
+            color: var(--blue-dark);
+            font-weight: 600;
+        }
+        
+        /* How it works section with blue accents */
+        #how-it-works .card {
+            border: 2px solid var(--light-gray);
+            transition: all 0.3s ease;
+        }
+        
+        #how-it-works .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+            border-color: var(--blue-primary);
+        }
+        
+        #how-it-works .fa-shield-alt,
+        #how-it-works .fa-file-alt,
+        #how-it-works .fa-info-circle,
+        #how-it-works .fa-tags {
+            color: var(--blue-primary);
+            transition: transform 0.3s ease;
+        }
+        
+        #how-it-works .card:hover i {
+            transform: scale(1.1);
+        }
+        
+        #how-it-works .card-title {
+            color: var(--black);
+            font-weight: 700;
+        }
+        
+        #how-it-works .card-text {
+            color: var(--dark-gray);
+        }
+        
+        /* About section with blue border */
+        #about {
+            background-color: var(--very-light-gray);
+            border-top: 3px solid var(--blue-primary);
+            border-bottom: 3px solid var(--blue-primary);
+        }
+        
+        #about h2, #how-it-works h2 {
+            color: var(--black);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        #about h2::after, #how-it-works h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue-primary) 0%, var(--blue-light) 100%);
+            border-radius: 2px;
+        }
+        
+        #about p {
+            color: var(--dark-gray);
+            line-height: 1.8;
+        }
+        
+        /* Footer with blue accent */
+        footer {
+            background: linear-gradient(135deg, var(--black) 0%, var(--dark-gray) 100%) !important;
+            color: var(--white) !important;
+            border-top: 3px solid var(--blue-primary);
+        }
+        
+        footer p {
+            color: var(--light-gray);
+        }
+        
+        /* Disclaimer text */
+        .disclaimer {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--medium-gray);
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: var(--blue-pale);
+            border-left: 3px solid var(--blue-primary);
+        }
+        
+        /* Alert styling */
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 2px solid #dc3545;
+            color: var(--black);
+        }
+        
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        button, a, .card, .entity-tag {
+            transition: all 0.3s ease !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-newspaper me-2"></i>
+                News Enhancer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress-container" class="scroll-progress-container">
+        <div id="scroll-progress-bar" class="scroll-progress-bar"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-center py-5">
+        <div class="container">
+            <h1 class="display-4 mb-4">Enhance Your News Reading Experience</h1>
+            <p class="lead mb-4">
+                Analyze articles for potential bias, get concise summaries, discover context, and explore key entities - all in one place.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container my-5">
+        <!-- Input Section (Text only) -->
+        <section class="input-section mb-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Paste Article Text
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="text-form">
+                        <div class="mb-3">
+                            <label for="article-text" class="form-label">Paste article text:</label>
+                            <textarea class="form-control" id="article-text" rows="6" placeholder="Paste the full text of the news article here... (Press Enter to submit, Shift+Enter for new line)" required></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-magic me-2"></i>Enhance
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="clear-btn">
+                                <i class="fas fa-eraser me-2"></i>Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="text-center py-5 d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Analyzing your article...</p>
+        </div>
+
+        <!-- Results Section (Hidden initially) -->
+        <section id="results-section" class="results-section d-none">
+            <div class="row">
+                <!-- Full Width: Analysis Results -->
+                <div class="col-12">
+                    <!-- Summary Section -->
+                    <div class="analysis-section">
+                        <h2 class="analysis-title">
+                            <i class="fas fa-file-alt me-2"></i>Summary
+                        </h2>
+                        <div id="summary-content-container">
+                            <div class="analysis-content-body">
+                                <div class="btn-group mb-3 w-100" role="group">
+                                    <input type="radio" class="btn-check" name="summary-length" id="summary-short" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="summary-short">Short</label>
+                                    <input type="radio" class="btn-check" name="summary-length" id="summary-medium" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="summary-medium">Medium</label>
+                                    <input type="radio" class="btn-check" name="summary-length" id="summary-long" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="summary-long">Long</label>
+                                </div>
+                                <div id="summary-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Article Analysis Section -->
+                    <div class="analysis-section">
+                        <h2 class="analysis-title">
+                            <i class="fas fa-shield-alt me-2"></i>Article Analysis
+                        </h2>
+                        <div id="fakeness-content-container">
+                            <div class="analysis-content-body">
+                                <div id="fakeness-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Context Section -->
+                    <div class="analysis-section">
+                        <h2 class="analysis-title">
+                            <i class="fas fa-info-circle me-2"></i>Context
+                        </h2>
+                        <div id="context-content-container">
+                            <div class="analysis-content-body">
+                                <div id="context-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Entities Section -->
+                    <div class="analysis-section">
+                        <h2 class="analysis-title">
+                            <i class="fas fa-tags me-2"></i>Key Entities
+                        </h2>
+                        <div id="entities-content-container">
+                            <div class="analysis-content-body">
+                                <div id="entities-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="my-5 py-5">
+            <h2 class="text-center mb-4">About News Enhancer</h2>
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <p>News Enhancer is a web application designed to help readers better understand and contextualize news articles. Using natural language processing techniques, it analyzes articles to detect potential bias, provides concise summaries, offers contextual information, and highlights key entities.</p>
+                    <p>Our goal is to promote media literacy and critical thinking by giving readers tools to analyze the content they consume more effectively.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="my-5 py-5">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Article Analysis</h5>
+                            <p class="card-text">Analyzes language patterns to detect potential bias or misleading content.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-file-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Summarization</h5>
+                            <p class="card-text">Creates concise summaries of varying lengths to quickly grasp the main points.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-info-circle fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Context</h5>
+                            <p class="card-text">Provides background information about the main topics to enhance understanding.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-tags fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Entity Recognition</h5>
+                            <p class="card-text">Identifies and explains key people, places, and organizations mentioned in the article.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">© 2025 News Enhancer. Created for educational purposes.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS (for UI components like tabs, accordion) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Compromise.js (NLP library) - Try multiple CDN options -->
+    <script src="https://unpkg.com/compromise"></script>
+
+    <!-- Custom JavaScript Modules -->
+    <script src="js/article-processor.js"></script>
+    <script src="js/fake-news-detector.js"></script>
+    <script src="js/summarizer.js"></script>
+    <script src="js/context-provider.js"></script>
+    <script src="js/entity-recognizer.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Scroll progress bar functionality
+        window.addEventListener('scroll', () => {
+            const scrollProgress = document.getElementById('scroll-progress-bar');
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+    </script>
+</body>
+</html>

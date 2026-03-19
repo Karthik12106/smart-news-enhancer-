@@ -43,19 +43,19 @@ This project is deployed on an AWS EC2 instance using Nginx as the web server.
 ## 📸 Screenshots
 
 ### 🌐 Website (Live on EC2)
-![Website](website.png)
+![Website](screenshots/website.png)
 
 ### ☁️ EC2 Instance Running
-![EC2 Instance](ec2.png)
+![EC2 Instance](screenshots/ec2.png)
 
 ### 🔐 Security Group Configuration (Ports)
-![Security Group](security.png)
+![Security Group](screenshots/security.png)
 
 ### ⚙️ Nginx Server Status
-![Nginx Status](nginx.png)
+![Nginx Status](screenshots/nginx.png)
 
 ### 📂 Deployment Files in Nginx Directory
-![Files](files.png)
+![Files](screenshots/files.png)
 ---
 
 ## 🚧 Improvements in Progress

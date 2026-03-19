@@ -21,16 +21,24 @@ This project is deployed on an AWS EC2 instance using Nginx as the web server.
 - Accessed via public IP over HTTP
 
 ---
-
 ## 📂 Project Structure
-/project-root
-│── index.html
-│── css/
-│   └── styles.css
-│── js/
-│   └── script.js
-│── images/
 
+```
+Smart-News-Enhancer/
+├── index.html
+├── css/
+│   └── styles.css
+├── js/
+│   └── script.js
+├── images/
+├── Screenshots/
+│   ├── website.png
+│   ├── ec2.png
+│   ├── security.png
+│   ├── nginx.png
+│   └── files.png
+└── README.md
+```
 ---
 
 ## ✨ Features
